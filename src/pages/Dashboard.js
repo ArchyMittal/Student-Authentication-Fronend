@@ -17,23 +17,29 @@ function Dashboard() {
       return;
     }
 
-    axios.get('https://student-authentication-backend.onrender.com/api/dashboard', {
-      headers: { Authorization: token }
-    })
-    .then(res => {
-      setUser(res.data);
-      setCourse(res.data.course);
-    })
-    .catch(() => {
-      localStorage.removeItem('token');
-      navigate('/login');
-    });
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(
+          'https://student-authentication-backend.onrender.com/api/dashboard',
+          {
+            headers: { Authorization: token }
+          }
+        );
+        setUser(res.data);
+        setCourse(res.data.course);
+      } catch (err) {
+        localStorage.removeItem('token');
+        navigate('/login');
+      }
+    };
 
-  }, []);
+    fetchUser();
+  }, [token, navigate]); // ✅ FIXED
 
   const updateCourse = async () => {
     try {
-      await axios.put('https://student-authentication-backend.onrender.com/api/update-course',
+      await axios.put(
+        'https://student-authentication-backend.onrender.com/api/update-course',
         { course },
         { headers: { Authorization: token } }
       );
@@ -45,7 +51,8 @@ function Dashboard() {
 
   const updatePassword = async () => {
     try {
-      await axios.put('https://student-authentication-backend.onrender.com/api/update-password',
+      await axios.put(
+        'https://student-authentication-backend.onrender.com/api/update-password',
         { oldPassword, newPassword },
         { headers: { Authorization: token } }
       );
@@ -66,17 +73,28 @@ function Dashboard() {
             <p><b>Email:</b> {user.email}</p>
 
             <h3>Update Course</h3>
-            <input value={course} style={styles.input}
-              onChange={e => setCourse(e.target.value)} />
+            <input
+              value={course}
+              style={styles.input}
+              onChange={e => setCourse(e.target.value)}
+            />
             <button style={styles.button} onClick={updateCourse}>
               Update Course
             </button>
 
             <h3>Update Password</h3>
-            <input type="password" placeholder="Old Password" style={styles.input}
-              onChange={e => setOldPassword(e.target.value)} />
-            <input type="password" placeholder="New Password" style={styles.input}
-              onChange={e => setNewPassword(e.target.value)} />
+            <input
+              type="password"
+              placeholder="Old Password"
+              style={styles.input}
+              onChange={e => setOldPassword(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="New Password"
+              style={styles.input}
+              onChange={e => setNewPassword(e.target.value)}
+            />
             <button style={styles.button} onClick={updatePassword}>
               Update Password
             </button>
@@ -85,10 +103,13 @@ function Dashboard() {
 
         <br />
 
-        <button style={styles.button} onClick={() => {
-          localStorage.removeItem('token');
-          navigate('/login');
-        }}>
+        <button
+          style={styles.button}
+          onClick={() => {
+            localStorage.removeItem('token');
+            navigate('/login');
+          }}
+        >
           Logout
         </button>
       </div>
